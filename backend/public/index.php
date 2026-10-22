@@ -31,7 +31,6 @@ $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 $app->add(new EcoMetricsMiddleware());
 $app->add(new CorsMiddleware);
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->options("/{routes:.+}", function ($request, $response){
   return $response;
