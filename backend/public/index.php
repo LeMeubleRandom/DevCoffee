@@ -45,8 +45,18 @@ $app->get('/api/consumptions', [ConsumptionController::class, "getConsumption"])
 $app->post('/api/consumptions', [ConsumptionController::class, "createConsumption"]);
 $app->delete('/api/consumptions/{id}', [ConsumptionController::class . "delete"]);
 
-// Sessions routes
-$app->get("/api/sessions", [DrinkController::class, "getSessions"]);
-$app->post("/api/sessions", [DrinkController::class, "storeSession"]);
+$app->addRoutingMiddleware();
+
+$errorMiddleware = $app->addErrorMiddleware(
+    displayErrorDetails: false,
+    logErrors: true,
+    logErrorDetails: true
+);
+
+$errorMiddleware->setDefaultErrorHandler(
+    new \App\Handlers\ProblemDetailsErrorHandler(
+        $app->getResponseFactory()
+    )
+);
 
 $app->run();
