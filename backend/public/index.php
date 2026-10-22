@@ -36,22 +36,22 @@ $app->options("/{routes:.+}", function ($request, $response){
   return $response;
 });
 
+// 404 routes
+$app->
+
 // Drinks routes
-$app->get("/api/drinks", [DrinkController::class, "index"]);
+$app->get("/api/drinks", [DrinkController::class, "getDrink"]);
+$app->post("/api/drinks", [DrinkController::class, "newDrink"]);
 
 // Consumptions routes
-$app->get('/api/consumptions', [ConsumptionController::class . ':getConsumption']);
-$app->post('/api/consumptions', [ConsumptionController::class . ':store']);
-$app->delete('/api/consumptions/{id}', [ConsumptionController::class . ':delete']);
+$app->get('/api/consumptions', [ConsumptionController::class, "getConsumption"]);
+$app->post('/api/consumptions', [ConsumptionController::class, "createConsumption"]);
+$app->delete('/api/consumptions/{id}', [ConsumptionController::class . "delete"]);
 
 // Sessions routes
 $app->get("/api/sessions", [DrinkController::class, "getSessions"]);
 $app->post("/api/sessions", [DrinkController::class, "storeSession"]);
 
-
-/**
- * Mettre en place sur /api/sessions
- * Requête GET | DELETE | UPDATE
- */
-
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
 $app->run();

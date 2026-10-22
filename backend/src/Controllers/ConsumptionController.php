@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Services\CoffeeService;
+use App\Models\Consumption;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Responses\ProblemDetailsResponse;
@@ -15,7 +16,7 @@ class ConsumptionController
 
     public function getConsumption(Request $request, Response $response): Response
     {
-        $consumptions = $this->coffeeService->getLastConsumptions();
+        $consumptions = $this->coffeeService->getLast20Consumptions();
         $baseUrl = UrlHelper::getBaseUrl($request);
 
         $data = array_map(function ($c) use ($baseUrl) {
@@ -36,20 +37,19 @@ class ConsumptionController
 
         $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
-        return $response
-            ->withHeader("Content-Type", "application/json")
-            ->withStatus(200);
+        return $response->withHeader("Content-Type", "application/json")->withStatus(200);
     }
 
-    public function stor(Request $request, Response $response) : Response{
+    public function createConsumption(Request $request, Response $response): Response
+    {
         $body = $request->getParsedBody() ?? json_decode($request->getBody()->getContents(), true);
 
-        if (empty($body['drinkId']) || empty($body['developerName'])){
+        if (empty($body['drinkId']) || empty($body['developerName'])) {
             return ProblemDetailsResponse::create(
                 response: $response,
                 status: 400,
                 title: "Validation Error",
-                detail: "Les champs 'drinkId' et 'developerName sont requis."
+                detail: "Les champs 'drinkId' et 'developerName' sont requis."
             );
         }
 
@@ -57,7 +57,7 @@ class ConsumptionController
         $developerName = (string) $body['developerName'];
 
         $drink = $this->coffeeService->getDrinkById($drinkId);
-        if (!$drink){
+        if (!$drink) {
             return ProblemDetailsResponse::create(
                 response: $response,
                 status: 404,
@@ -66,15 +66,15 @@ class ConsumptionController
             );
         }
 
-        $caffeineToday = $this->coffeeService->getTodayCaffeineTotal($developerName);
         $drinkCaffeine = $drink->caffeine_mg ?? $drink->caffeineMg;
+        $caffeineToday = $this->coffeeService->getTodayCaffeineTotal($developerName);
 
-        if(($caffeineToday + $drinkCaffeine) > 400){
+        if (($caffeineToday + $drinkCaffeine) > 400) {
             return ProblemDetailsResponse::create(
                 response: $response,
                 status: 429,
-                title: "Too many requests",
-                detail: "Limite de caféine dépaséee, le total actuel est de : {$caffeineToday}mg, ajout : {$drinkCaffeine}mg (max : 400mg)."
+                title: "Too Many Requests",
+                detail: "Limite de caféine dépassée, le total actuel est de : {$caffeineToday}mg, ajout : {$drinkCaffeine}mg (max : 400mg)."
             );
         }
 
@@ -82,14 +82,14 @@ class ConsumptionController
         $baseUrl = UrlHelper::getBaseUrl($request);
 
         $payload = [
-            "id" => $consumption['id'],
-            "developerName" => $consumption['developerName'],
-            "drinkName" => $consumption['drinkName'],
-            "caffeineMg" => $consumption['caffeineMg'],
-            "consumedAt" => $consumption['consumedAt'],
+            "id" => $consumption->id,
+            "developerName" => $consumption->developerName,
+            "drinkName" => $drink->name,
+            "caffeineMg" => $drinkCaffeine,
+            "consumedAt" => $consumption->consumedAt,
             "_links" => [
                 "delete" => [
-                    "href" => "{$baseUrl}/api/consumptions/{$consumption['id']}",
+                    "href" => "{$baseUrl}/api/consumptions/{$consumption->id}",
                     "method" => "DELETE"
                 ]
             ]
@@ -97,7 +97,7 @@ class ConsumptionController
 
         $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
-        return $response->withHeader("Content-Type", "application/json")->withStatus(201);    
+        return $response->withHeader("Content-Type", "application/json")->withStatus(201);
     }
 
     public function delete(Request $request, Response $response, array $args): Response{
