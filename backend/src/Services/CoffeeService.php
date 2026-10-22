@@ -61,29 +61,47 @@ class CoffeeService
         return $req->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createConsumption(
-      int $drinkId,
-      string $developerName
-    ): Consumption {
-      $req = $this->pdo->prepare("INSERT INTO consumptions(drink_id, developer_name) VALUES(:drinkId, :developerName)");
-      
-      $req->bindValue(":drinkId", $drinkId, PDO::PARAM_INT);
-      $req->bindValue(":developerName", $developerName, PDO::PARAM_STR);
-      $req->execute();
+    public function getTodayCaffeineTotal(string $developerName): int
+    {
+        $sql = "SELECT COALESCE(SUM(d.caffeine_mg), 0) AS total
+                FROM consumptions c
+                JOIN drinks d ON c.drink_id = d.id
+                WHERE c.developer_name = :developerName
+                AND DATE(c.consumed_at) = CURRENT_DATE()";
 
-      $id = (int) $this->pdo->lastInsertId();
+        $req = $this->pdo->prepare($sql);
+        $req->bindValue(':developerName', $developerName, PDO::PARAM_STR);
+        $req->execute();
 
-      $updateReq = $this->pdo->prepare("UPDATE drinks SET is_available = 0 WHERE id=:id");
-      $updateReq->bindValue(":id", $drinksId, PDO::PARAM_INT);
-      $updateReq->execute();
-
-      return new Consumption(
-        $id,
-        $drinksId,
-        $developerName,
-        date("Y-m-d H:i:s")
-      );
-
+        return (int) $req->fetchColumn();
     }
 
+    public function createConsumption(int $drinkId, string $developerName): array
+    {
+        $req = $this->pdo->prepare("INSERT INTO consumptions (drink_id, developer_name, consumed_at) VALUES (:drinkId, :developerName, NOW())");
+        $req->bindValue(':drinkId', $drinkId, PDO::PARAM_INT);
+        $req->bindValue(':developerName', $developerName, PDO::PARAM_STR);
+        $req->execute();
+
+        $id = (int) $this->pdo->lastInsertId();
+
+        $drink = $this->getDrinkById($drinkId);
+
+        return [
+            'id' => $id,
+            'developerName' => $developerName,
+            'drinkName' => $drink->name,
+            'caffeineMg' => $drink->caffeine_mg ?? $drink->caffeineMg,
+            'consumedAt'  => date('Y-m-d H:i:s')
+        ];
+    }
+
+    public function deleteConsumption(int $id): bool
+    {
+        $req = $this->pdo->prepare("DELETE FROM consumptions WHERE id = :id");
+        $req->bindValue(':id', $id, PDO::PARAM_INT);
+        $req->execute();
+
+        return $req->rowCount() > 0;
+    }
 }

@@ -40,11 +40,14 @@ $app->options("/{routes:.+}", function ($request, $response){
 $app->get("/api/drinks", [DrinkController::class, "index"]);
 
 // Consumptions routes
-$app->get('/api/consumptions', [ConsumptionController::class . ':index']);
+$app->get('/api/consumptions', [ConsumptionController::class . ':getConsumption']);
+$app->post('/api/consumptions', [ConsumptionController::class . ':store']);
+$app->delete('/api/consumptions/{id}', [ConsumptionController::class . ':delete']);
 
 // Sessions routes
 $app->get("/api/sessions", [DrinkController::class, "getSessions"]);
 $app->post("/api/sessions", [DrinkController::class, "storeSession"]);
+
 
 /**
  * Mettre en place sur /api/sessions
