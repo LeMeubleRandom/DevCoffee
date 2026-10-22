@@ -1,12 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+/**
+ * Composant racine de l'application
+ *
+ * Ce composant doit afficher la structure globale (ex: RouterView ou HomeView)
+ */
+import { RouterView } from 'vue-router'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit
-    <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to
-    read the documentation
-  </p>
+  <RouterView />
 </template>
 
-<style scoped></style>
+<style scoped>
+/* TODO: Styles globaux pour le conteneur principal */
+</style>
