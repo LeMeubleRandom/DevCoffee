@@ -44,25 +44,25 @@ class CoffeeService
     }
 
     public function getAllConsumptions(): array{
-      $req = $this->pdo->prepare("SELECT drinks_id, developer_name, consumed_at FROM consumptions ORDER BY id DESC");
+      $req = $this->pdo->prepare("SELECT drink_id, developer_name, consumed_at FROM consumptions ORDER BY id DESC");
 
       $sessions = $req->fetchAll();
 
       return array_map(fn($s) => new Consumption(
         id: (int) $s->id,
-        drinksId: (int) $s->drinks_id,
-        developer_name: (string) $s->developer_name,
+        drinkId: (int) $s->drink_id,
+        developerName: (string) $s->developer_name,
         consumedAt: (string) $s->consumed_at
       ), $sessions);
     }
 
     public function createConsumption(
-      int $drinksId,
+      int $drinkId,
       string $developerName
     ): Consumption {
-      $req = $this->pdo->prepare("INSERT INTO consumptions(drinks_id, developer_name) VALUES(:drinksId, :developerName)");
+      $req = $this->pdo->prepare("INSERT INTO consumptions(drink_id, developer_name) VALUES(:drinkId, :developerName)");
       
-      $req->bindValue(":drinksId", $drinksId, PDO::PARAM_INT);
+      $req->bindValue(":drinkId", $drinkId, PDO::PARAM_INT);
       $req->bindValue(":developerName", $developerName, PDO::PARAM_STR);
       $req->execute();
 
