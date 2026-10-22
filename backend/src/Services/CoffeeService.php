@@ -43,17 +43,22 @@ class CoffeeService
       );
     }
 
-    public function getAllConsumptions(): array{
-      $req = $this->pdo->prepare("SELECT drink_id, developer_name, consumed_at FROM consumptions ORDER BY id DESC");
+    public function getLastConsumptions(): array
+    {
+        $sql = "SELECT  
+                    c.id, 
+                    c.developer_name AS developerName, 
+                    d.name AS drinkName, 
+                    d.caffeine_mg AS caffeineMg, 
+                    c.consumed_at AS consumedAt
+                FROM consumptions c
+                JOIN drinks d ON c.drink_id = d.id
+                ORDER BY c.consumed_at DESC
+                LIMIT 20";
 
-      $sessions = $req->fetchAll();
+        $req = $this->pdo->query($sql);
 
-      return array_map(fn($s) => new Consumption(
-        id: (int) $s->id,
-        drinkId: (int) $s->drink_id,
-        developerName: (string) $s->developer_name,
-        consumedAt: (string) $s->consumed_at
-      ), $sessions);
+        return $req->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function createConsumption(

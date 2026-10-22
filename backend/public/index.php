@@ -39,6 +39,9 @@ $app->options("/{routes:.+}", function ($request, $response){
 // Drinks routes
 $app->get("/api/drinks", [DrinkController::class, "index"]);
 
+// Consumptions routes
+$app->get('/api/consumptions', [ConsumptionController::class . ':index']);
+
 // Sessions routes
 $app->get("/api/sessions", [DrinkController::class, "getSessions"]);
 $app->post("/api/sessions", [DrinkController::class, "storeSession"]);
