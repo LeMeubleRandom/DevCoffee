@@ -9,12 +9,12 @@ class UrlHelper
 
     public static function getBaseUrl(Request $request): string
     {
-        $uri       = $request->getUri();
-        $scheme    = $uri->getScheme();
+        $uri = $request->getUri();
+        $scheme = $uri->getScheme();
         $authority = $uri->getAuthority();
 
         $routeContext = RouteContext::fromRequest($request);
-        $basePath     = $routeContext->getBasePath();
+        $basePath = $routeContext->getBasePath();
 
         $baseUrl = rtrim("{$scheme}://{$authority}{$basePath}", "/");
 

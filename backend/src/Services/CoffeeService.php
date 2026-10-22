@@ -96,15 +96,12 @@ class CoffeeService
       );
     }
 
-    public function createConsumption(
-      int $drinkId,
-      string $developerName
-    ): Consumption {
-      $req = $this->pdo->prepare("INSERT INTO consumptions(drink_id, developer_name) VALUES(:drinkId, :developerName)");
-      
-      $req->bindValue(":drinkId", $drinkId, PDO::PARAM_INT);
-      $req->bindValue(":developerName", $developerName, PDO::PARAM_STR);
-      $req->execute();
+    public function createConsumption(int $drinkId, string $developerName): Consumption
+    {
+        $req = $this->pdo->prepare("INSERT INTO consumptions (drink_id, developer_name, consumed_at) VALUES (:drinkId, :developerName, NOW())");
+        $req->bindValue(':drinkId', $drinkId, PDO::PARAM_INT);
+        $req->bindValue(':developerName', $developerName, PDO::PARAM_STR);
+        $req->execute();
 
       $id = (int) $this->pdo->lastInsertId();
 
@@ -114,6 +111,15 @@ class CoffeeService
         $developerName,
         date("Y-m-d H:i:s")
       );
+    }
+
+    public function deleteConsumption(int $id): bool
+    {
+      $req = $this->pdo->prepare("DELETE FROM consumptions WHERE id = :id");
+      $req->bindValue(':id', $id, PDO::PARAM_INT);
+      $req->execute();
+
+      return $req->rowCount() > 0;
     }
 
     public function getLast20Consumptions(): array
@@ -132,5 +138,20 @@ class CoffeeService
         $req = $this->pdo->query($sql);
 
         return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTodayCaffeineTotal(string $developerName): int
+    {
+        $sql = "SELECT COALESCE(SUM(d.caffeine_mg), 0) AS total
+                FROM consumptions c
+                JOIN drinks d ON c.drink_id = d.id
+                WHERE c.developer_name = :developerName
+                AND DATE(c.consumed_at) = CURRENT_DATE()";
+
+        $req = $this->pdo->prepare($sql);
+        $req->bindValue(':developerName', $developerName, PDO::PARAM_STR);
+        $req->execute();
+
+        return (int) $req->fetchColumn();
     }
 }
