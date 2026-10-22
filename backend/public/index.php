@@ -36,9 +36,6 @@ $app->options("/{routes:.+}", function ($request, $response){
   return $response;
 });
 
-// 404 routes
-$app->
-
 // Drinks routes
 $app->get("/api/drinks", [DrinkController::class, "getDrink"]);
 $app->post("/api/drinks", [DrinkController::class, "newDrink"]);
@@ -50,6 +47,4 @@ $app->get('/api/consumptions', [ConsumptionController::class, "getConsumption"])
 $app->get("/api/sessions", [DrinkController::class, "getSessions"]);
 $app->post("/api/sessions", [DrinkController::class, "storeSession"]);
 
-$app->addRoutingMiddleware();
-$app->addErrorMiddleware(true, true, true);
 $app->run();

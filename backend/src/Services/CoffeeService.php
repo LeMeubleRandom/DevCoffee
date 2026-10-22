@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\Drink;
+use App\Models\Consumption;
 use App\Models\ChargeSession;
 use PDO;
 
@@ -109,7 +110,7 @@ class CoffeeService
 
       return new Consumption(
         $id,
-        $drinksId,
+        $drinkId,
         $developerName,
         date("Y-m-d H:i:s")
       );
