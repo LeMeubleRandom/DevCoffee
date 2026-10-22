@@ -31,7 +31,6 @@ $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 $app->add(new EcoMetricsMiddleware());
 $app->add(new CorsMiddleware);
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->options("/{routes:.+}", function ($request, $response){
   return $response;
@@ -48,4 +47,6 @@ $app->get('/api/consumptions', [ConsumptionController::class . ':getConsumption'
 $app->get("/api/sessions", [DrinkController::class, "getSessions"]);
 $app->post("/api/sessions", [DrinkController::class, "storeSession"]);
 
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
 $app->run();

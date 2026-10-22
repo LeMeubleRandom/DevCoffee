@@ -21,8 +21,8 @@ class CoffeeService
         return array_map(fn($r) => new Drink(
             (int) $r->id,
             $r->name,
-            (int) $r->caffeineMg,
-            (int) $r->volumeMl
+            (int) $r->caffeine_mg,
+            (int) $r->volume_ml
         ), $rows);
     }
 
@@ -33,9 +33,9 @@ class CoffeeService
 
       return array_map(fn($s) => new Consumption(
         id: (int) $s->id,
-        drinkId: (int) $s->drinkId,
-        developerName: (string) $s->developerName,
-        consumedAt: (string) $s->consumedAt
+        drinkId: (int) $s->drink_id,
+        developerName: (string) $s->developer_name,
+        consumedAt: (string) $s->consumed_at
       ), $sessions);
     }
 
@@ -51,8 +51,8 @@ class CoffeeService
       return new Drink(
         (int) $r->id,
         $r->name,
-        (int) $r->caffeineMg,
-        (int) $r->volumeMl
+        (int) $r->caffeine_mg,
+        (int) $r->volume_ml
       );
     }
 
@@ -67,9 +67,9 @@ class CoffeeService
 
       return new Consumption(
         (int) $r->id,
-        (int) $r->drinkId,
-        (string) $r->developerName,
-        (string) $r->consumedAt
+        (int) $r->drink_id,
+        (string) $r->developer_name,
+        (string) $r->consumed_at
       );
     }
 
