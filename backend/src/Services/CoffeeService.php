@@ -114,4 +114,22 @@ class CoffeeService
         date("Y-m-d H:i:s")
       );
     }
+
+    public function getLastConsumptions(): array
+    {
+        $sql = "SELECT  
+                    c.id, 
+                    c.developer_name AS developerName, 
+                    d.name AS drinkName, 
+                    d.caffeine_mg AS caffeineMg, 
+                    c.consumed_at AS consumedAt
+                FROM consumptions c
+                JOIN drinks d ON c.drink_id = d.id
+                ORDER BY c.consumed_at DESC
+                LIMIT 20";
+
+        $req = $this->pdo->query($sql);
+
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
