@@ -23,8 +23,8 @@ class DrinkController
         $data = array_map(fn($d) => [
             "id" => $d->id,
             "name" => $d->name,
-            "caffeineMg" => $d->caffeine_mg, 
-            "volumeMl" => $d->volume_ml,   
+            "caffeineMg" => $d->caffeineMg, 
+            "volumeMl" => $d->volumeMl,   
             "_links" => [
                 "self" => [
                     "href" => "{$baseUrl}/api/drinks/{$d->id}",
