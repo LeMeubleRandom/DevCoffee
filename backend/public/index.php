@@ -43,7 +43,7 @@ $app->post("/api/drinks", [DrinkController::class, "newDrink"]);
 // Consumptions routes
 $app->get('/api/consumptions', [ConsumptionController::class, "getConsumption"]);
 $app->post('/api/consumptions', [ConsumptionController::class, "createConsumption"]);
-$app->delete('/api/consumptions/{id}', [ConsumptionController::class . "delete"]);
+$app->delete('/api/consumptions/{id}', [ConsumptionController::class, "delete"]);
 
 $app->addRoutingMiddleware();
 

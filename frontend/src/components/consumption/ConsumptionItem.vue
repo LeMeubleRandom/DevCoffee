@@ -9,20 +9,27 @@ const props = defineProps<{
 
 const store = useConsumptionsStore()
 const isDeleting = ref(false)
+const showModal = ref(false)
 
-async function handleDelete() {
+function openModal() {
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+}
+
+async function confirmDelete() {
   const deleteUrl = props.consumption._links?.delete?.href
   if (!deleteUrl) {
-    return
-  }
-
-  if (!confirm(`Supprimer la consommation de ${props.consumption.developerName} ?`)) {
+    closeModal()
     return
   }
 
   isDeleting.value = true
   try {
     await store.removeConsumption(deleteUrl)
+    closeModal()
   } catch (e) {
     console.error('Erreur lors de la suppression', e)
   } finally {
@@ -46,13 +53,32 @@ async function handleDelete() {
 
     <button
       v-if="consumption._links?.delete?.href"
-      @click="handleDelete"
+      @click="openModal"
       :disabled="isDeleting"
       class="btn-delete"
       title="Supprimer via HATEOAS"
     >
       {{ isDeleting ? '...' : 'Supprimer' }}
     </button>
+
+    <!-- Modal Popup de confirmation -->
+    <div v-if="showModal" class="modal-backdrop" @click.self="closeModal">
+      <div class="modal-box">
+        <h3>Confirmer la suppression</h3>
+        <p>
+          Voulez-vous vraiment supprimer la consommation de
+          <strong>{{ consumption.developerName }}</strong> ({{ consumption.drinkName }}) ?
+        </p>
+        <div class="modal-actions">
+          <button @click="closeModal" :disabled="isDeleting" class="btn-cancel">
+            Annuler
+          </button>
+          <button @click="confirmDelete" :disabled="isDeleting" class="btn-confirm">
+            {{ isDeleting ? 'Suppression...' : 'Confirmer' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -119,5 +145,74 @@ async function handleDelete() {
 .btn-delete:hover:not(:disabled) {
   background: #dc2626;
   color: white;
+}
+
+/* Styles Popup Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-box {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+
+.modal-box p {
+  color: #475569;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.btn-confirm {
+  background: #dc2626;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: #b91c1c;
 }
 </style>
