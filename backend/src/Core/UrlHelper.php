@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Core;
 
 use Psr\Http\Message\ServerRequestInterface as Request;

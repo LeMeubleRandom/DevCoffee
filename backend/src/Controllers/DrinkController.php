@@ -5,7 +5,6 @@ use App\Services\CoffeeService;
 use App\Responses\ProblemDetailsResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Routing\RouteContext;
 use App\Core\UrlHelper;
 
 class DrinkController
@@ -54,18 +53,28 @@ class DrinkController
           );
       }
 
+      $drink = $this->coffeeService->createDrink(
+        name: $body["name"],
+        caffeineMg: (int) $body["caffeineMg"],
+        volumeMl: (int) $body["volumeMl"]
+      );
+
       $baseUrl = UrlHelper::getBaseUrl($request);
       $payload = [
-        "id" => $session->id,
-        "name" => $session->name,
-        "caffeineMg" => $session->caffeineMg,
-        "volumeMl" => $session->volumeMl,
+        "id" => $drink->id,
+        "name" => $drink->name,
+        "caffeineMg" => $drink->caffeineMg,
+        "volumeMl" => $drink->volumeMl,
         "_links" => [
-          "drink" => [
-            "href" => "{$baseUrl}/api/drinks/{$session->drinkId}",
+          "self" => [
+            "href" => "{$baseUrl}/api/drinks/{$drink->id}",
             "method" => "GET"
-            ]
+          ]
         ]
       ];
+
+      $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
+      return $response->withHeader("Content-Type", "application/json")->withStatus(201);
     }
 }

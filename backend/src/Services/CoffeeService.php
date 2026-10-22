@@ -115,7 +115,7 @@ class CoffeeService
       );
     }
 
-    public function getLastConsumptions(): array
+    public function getLast20Consumptions(): array
     {
         $sql = "SELECT  
                     c.id, 

@@ -14,7 +14,7 @@ class ConsumptionController
 
     public function getConsumption(Request $request, Response $response): Response
     {
-        $consumptions = $this->coffeeService->getLastConsumptions();
+        $consumptions = $this->coffeeService->getLast20Consumptions();
         $baseUrl = UrlHelper::getBaseUrl($request);
 
         $data = array_map(function ($c) use ($baseUrl) {
