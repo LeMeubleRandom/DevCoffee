@@ -31,13 +31,15 @@ $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 $app->add(new EcoMetricsMiddleware());
 $app->add(new CorsMiddleware);
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->options("/{routes:.+}", function ($request, $response){
   return $response;
 });
 
 // Drinks routes
-$app->get("/api/drinks", [DrinkController::class, "index"]);
+$app->get("/api/drinks", [DrinkController::class, "getDrink"]);
+$app->post("/api/drinks", [DrinkController::class, "newDrink"]);
 
 // Sessions routes
 $app->get("/api/sessions", [DrinkController::class, "getSessions"]);
