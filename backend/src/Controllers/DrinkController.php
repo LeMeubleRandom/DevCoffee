@@ -17,25 +17,23 @@ class DrinkController
 
     public function getDrink(Request $request, Response $response): Response
     {
-
         $drinks = $this->coffeeService->getAllDrinks();
-
         $baseUrl = UrlHelper::getBaseUrl($request);
 
         $data = array_map(fn($d) => [
-          "id" => $d->id,
-          "name" => $d->name,
-          "caffeine_mg" => $d->caffeine_mg,
-          "volume_ml" => $d->volume_ml,
-          "_links" => [
-            "self" => [
-              "href" => "{$baseUrl}/api/drinks/{$d->id}",
-              "method" => "GET"
-              ]
-          ]
+            "id" => $d->id,
+            "name" => $d->name,
+            "caffeineMg" => $d->caffeine_mg, 
+            "volumeMl" => $d->volume_ml,   
+            "_links" => [
+                "self" => [
+                    "href" => "{$baseUrl}/api/drinks/{$d->id}",
+                    "method" => "GET"
+                ]
+            ]
         ], $drinks);
 
-        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES));
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
         return $response->withHeader("Content-Type", "application/json")->withStatus(200);
     }
