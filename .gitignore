@@ -151,17 +151,5 @@ vite.config.ts.timestamp-*
 # vendor
 backend/vendor
 
-# env files
-.env
-.env.development
-.env.production
-
-backend/.env
-backend/.env.development
-backend/.env.production
-
-frontend/.env
-frontend/.env.development
-frontend/.env.production
-
-backend/composer.lock
+# Backend runtime data
+backend/var/
