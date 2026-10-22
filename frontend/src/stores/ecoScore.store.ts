@@ -1,16 +1,30 @@
 import { defineStore } from 'pinia'
-
-/**
- * Store Pinia pour les métriques de l'Éco-Score
- *
- * Ce fichier doit contenir :
- * - L'état (state) stockant les valeurs actuelles des métriques (temps de réponse, taille du payload, CO2 estimé)
- * - Les actions pour mettre à jour ces valeurs à partir des en-têtes HTTP de la dernière réponse reçue
- */
+import { ref } from 'vue'
+import type { EcoScoreMetrics } from '@/types/metrics'
 
 export const useEcoScoreStore = defineStore('ecoScore', () => {
-  // TODO: Définir les refs réactives pour responseTime, payloadSize, estimatedCo2
-  // TODO: Définir l'action pour parser et enregistrer les headers HTTP (X-Response-Time-Ms, etc.)
+  const metrics = ref<EcoScoreMetrics>({
+    responseTimeMs: null,
+    payloadSizeBytes: null,
+    estimatedCo2Grams: null,
+  })
 
-  return {}
+  function updateFromHeaders(headers: Headers) {
+    const time = headers.get('X-Response-Time-Ms')
+    const size = headers.get('X-Payload-Size-Bytes')
+    const co2 = headers.get('X-Estimated-CO2-Grams')
+
+    if (time !== null || size !== null || co2 !== null) {
+      metrics.value = {
+        responseTimeMs: time ? parseFloat(time) : null,
+        payloadSizeBytes: size ? parseInt(size, 10) : null,
+        estimatedCo2Grams: co2 ? parseFloat(co2) : null,
+      }
+    }
+  }
+
+  return {
+    metrics,
+    updateFromHeaders,
+  }
 })

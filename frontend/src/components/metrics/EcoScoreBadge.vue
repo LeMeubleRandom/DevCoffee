@@ -1,22 +1,66 @@
 <script setup lang="ts">
-/**
- * Badge Éco-Score
- *
- * Ce composant doit :
- * - Être affiché sous forme d'encadré discret en bas d'écran (ex: position fixed)
- * - Lire les valeurs depuis le store d'Éco-Score
- * - Afficher les en-têtes extraits de la dernière réponse HTTP reçue :
- *   - X-Response-Time-Ms (temps de réponse en ms)
- *   - X-Payload-Size-Bytes (taille du payload en octets)
- *   - X-Estimated-CO2-Grams (estimation d'émission CO2 en grammes)
- */
+import { useEcoScoreStore } from '@/stores/ecoScore.store'
+
+const ecoScoreStore = useEcoScoreStore()
 </script>
 
 <template>
-  <!-- TODO: Encadré discret en bas d'écran avec l'affichage des 3 métriques -->
-  <div></div>
+  <div class="eco-badge">
+    <div class="eco-title">🌱 Éco-Score (Dernière requête)</div>
+    <div class="eco-metrics">
+      <span class="metric">
+        ⏱️ <strong>{{ ecoScoreStore.metrics.responseTimeMs !== null ? ecoScoreStore.metrics.responseTimeMs + ' ms' : '-' }}</strong>
+      </span>
+      <span class="separator">•</span>
+      <span class="metric">
+        📦 <strong>{{ ecoScoreStore.metrics.payloadSizeBytes !== null ? ecoScoreStore.metrics.payloadSizeBytes + ' octets' : '-' }}</strong>
+      </span>
+      <span class="separator">•</span>
+      <span class="metric">
+        🌍 <strong>{{ ecoScoreStore.metrics.estimatedCo2Grams !== null ? ecoScoreStore.metrics.estimatedCo2Grams.toFixed(7) + ' g CO₂' : '-' }}</strong>
+      </span>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-/* TODO: Styles pour le positionnement discret en bas d'écran */
+.eco-badge {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(4px);
+  color: #f8fafc;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-size: 0.85rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.eco-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #34d399;
+  font-weight: 700;
+}
+
+.eco-metrics {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.separator {
+  color: #64748b;
+}
+
+.metric strong {
+  color: #e2e8f0;
+}
 </style>

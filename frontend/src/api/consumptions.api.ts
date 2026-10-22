@@ -1,10 +1,17 @@
-/**
- * Module d'appels API pour les consommations
- *
- * Ce fichier doit contenir :
- * - La méthode pour récupérer l'historique des consommations : GET /api/consumptions
- * - La méthode pour créer une consommation : POST /api/consumptions
- * - La méthode pour supprimer une consommation via le lien dynamique HATEOAS (_links.delete.href)
- */
+import { apiClient } from './apiClient'
+import type { Consumption, CreateConsumptionDto } from '@/types/consumption'
 
-// TODO: Implémenter les méthodes CRUD et HATEOAS pour les consommations
+export async function getConsumptions(): Promise<Consumption[]> {
+  return await apiClient<Consumption[]>('/api/consumptions', { method: 'GET' })
+}
+
+export async function createConsumptionApi(dto: CreateConsumptionDto): Promise<Consumption> {
+  return await apiClient<Consumption>('/api/consumptions', {
+    method: 'POST',
+    body: JSON.stringify(dto),
+  })
+}
+
+export async function deleteConsumptionByUrl(deleteUrl: string): Promise<void> {
+  await apiClient<void>(deleteUrl, { method: 'DELETE' })
+}

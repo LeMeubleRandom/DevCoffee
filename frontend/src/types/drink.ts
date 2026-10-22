@@ -1,10 +1,14 @@
-/**
- * Types et interfaces pour les boissons (Drinks)
- *
- * Ce fichier doit contenir :
- * - L'interface Drink (ex: id, name, caffeineAmount, etc.)
- */
+export interface HateoasLink {
+  href: string
+  method: string
+}
 
 export interface Drink {
-  // TODO: Définir les propriétés d'une boisson renvoyées par GET /api/drinks
+  id: number
+  name: string
+  caffeineMg: number
+  volumeMl: number
+  _links?: {
+    self?: HateoasLink
+  }
 }

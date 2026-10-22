@@ -1,19 +1,51 @@
 import { defineStore } from 'pinia'
-
-/**
- * Store Pinia pour la gestion globale de l'état des consommations et des boissons
- *
- * Ce fichier doit contenir :
- * - L'état (state) des listes (drinks, consumptions) et les indicateurs de chargement (loading, error)
- * - Les actions pour charger les boissons (GET /api/drinks)
- * - Les actions pour charger les consommations (GET /api/consumptions)
- * - L'action pour ajouter une consommation (POST /api/consumptions)
- * - L'action pour supprimer une consommation via son lien HATEOAS
- */
+import { ref } from 'vue'
+import type { Drink } from '@/types/drink'
+import type { Consumption, CreateConsumptionDto } from '@/types/consumption'
+import { getDrinks } from '@/api/drinks.api'
+import { getConsumptions, createConsumptionApi, deleteConsumptionByUrl } from '@/api/consumptions.api'
 
 export const useConsumptionsStore = defineStore('consumptions', () => {
-  // TODO: Définir les listes réactives des boissons et des consommations
-  // TODO: Définir les actions d'orchestration (fetchDrinks, fetchConsumptions, createConsumption, deleteConsumption)
+  const drinks = ref<Drink[]>([])
+  const consumptions = ref<Consumption[]>([])
+  const loading = ref(false)
 
-  return {}
+  async function loadDrinks() {
+    try {
+      drinks.value = await getDrinks()
+    } catch (e) {
+      console.error('Erreur chargement boissons', e)
+    }
+  }
+
+  async function loadConsumptions() {
+    loading.value = true
+    try {
+      consumptions.value = await getConsumptions()
+    } catch (e) {
+      console.error('Erreur chargement consommations', e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function addConsumption(dto: CreateConsumptionDto) {
+    await createConsumptionApi(dto)
+    await loadConsumptions()
+  }
+
+  async function removeConsumption(url: string) {
+    await deleteConsumptionByUrl(url)
+    await loadConsumptions()
+  }
+
+  return {
+    drinks,
+    consumptions,
+    loading,
+    loadDrinks,
+    loadConsumptions,
+    addConsumption,
+    removeConsumption,
+  }
 })

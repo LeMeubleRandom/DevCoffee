@@ -1,8 +1,6 @@
-/**
- * Module d'appels API pour les boissons
- *
- * Ce fichier doit contenir :
- * - La méthode pour récupérer la liste des boissons disponibles : GET /api/drinks
- */
+import { apiClient } from './apiClient'
+import type { Drink } from '@/types/drink'
 
-// TODO: Implémenter les requêtes vers l'endpoint /api/drinks
+export async function getDrinks(): Promise<Drink[]> {
+  return await apiClient<Drink[]>('/api/drinks', { method: 'GET' })
+}
