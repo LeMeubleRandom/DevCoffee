@@ -46,7 +46,7 @@ async function handleSubmit() {
           id="devName"
           v-model="developerName"
           type="text"
-          placeholder="Ex: Thomas"
+          placeholder="Ex: Antoine le LEADER (dictateur)"
           required
         />
       </div>
