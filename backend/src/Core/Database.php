@@ -2,7 +2,6 @@
 namespace App\Core;
 
 use PDO;
-use PDOException;
 
 class Database{
 
@@ -21,19 +20,15 @@ class Database{
 
       $dsn = "mysql:host={$host};dbname={$dbname};charset={$charset}";
 
-      try{
-        self::$instance = new PDO(
-          $dsn,
-          $username,
-          $password,
-          [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-          ]
-        );
-      }catch(PDOException $e){
-        die("Erreur de connexion BDD :" . $e->getMessage());
-      }
+      self::$instance = new PDO(
+        $dsn,
+        $username,
+        $password,
+        [
+          PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+        ]
+      );
     }
 
     return self::$instance;
