@@ -6,6 +6,7 @@ use App\Responses\ProblemDetailsResponse;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Throwable;
@@ -13,7 +14,8 @@ use Throwable;
 class ProblemDetailsErrorHandler
 {
     public function __construct(
-        private ResponseFactoryInterface $responseFactory
+        private ResponseFactoryInterface $responseFactory,
+        private LoggerInterface $logger
     ) {}
 
     public function __invoke(
@@ -39,7 +41,10 @@ class ProblemDetailsErrorHandler
         }
 
         if ($logErrors) {
-            error_log((string) $exception);
+            $this->logger->error("Unhandled API exception", [
+                "exception" => $exception,
+                "request_uri" => (string) $request->getUri(),
+            ]);
         }
 
         $response = ProblemDetailsResponse::create(
